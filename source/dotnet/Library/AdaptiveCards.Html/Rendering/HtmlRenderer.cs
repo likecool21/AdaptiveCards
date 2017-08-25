@@ -86,45 +86,101 @@ namespace AdaptiveCards.Rendering
         protected static HtmlTag OpenUrlActionRender(TypedElement actionElement, RenderContext context)
         {
             OpenUrlAction action = (OpenUrlAction)actionElement;
-            if (context.Config.SupportsInteractivity)
+
+            if (!context.Config.SupportsInteractivity)
             {
-                var uiButton = new LinkTag(action.Title, action.Url, $"ac-{action.Type.Replace(".", "").ToLower()}", "ac-action");
-                return uiButton;
+                return null;
             }
-            return null;
+
+            var buttonElement = new HtmlTag("button") { Text = action.Title }
+                .Attr("type", "button")
+                .Attr("url", action.Url)
+                .Style("overflow", "hidden")
+                .Style("white-space", "nowrap")
+                .Style("text-overflow", "ellipsis")
+                .Style("flex",
+                    context.Config.Actions.ActionAlignment == HorizontalAlignment.Stretch ? "0 1 100%" : "0 1 auto")
+                .AddClass("ac-pushButton")
+                .AddClass("ac-openUrlAction");
+
+            return buttonElement;
         }
 
         protected static HtmlTag ShowCardActionRender(TypedElement actionElement, RenderContext context)
         {
             ShowCardAction action = (ShowCardAction)actionElement;
-            if (context.Config.SupportsInteractivity)
+
+            if (!context.Config.SupportsInteractivity)
             {
-                var uiButton = new LinkTag(action.Title, null, $"ac-{action.Type.Replace(".", "").ToLower()}", "ac-action");
-                return uiButton;
+                return null;
             }
-            return null;
+
+            var buttonElement = new HtmlTag("button") { Text = action.Title }
+                .Attr("type", "button")
+                .Style("overflow", "hidden")
+                .Style("white-space", "nowrap")
+                .Style("text-overflow", "ellipsis")
+                .Style("flex",
+                    context.Config.Actions.ActionAlignment == HorizontalAlignment.Stretch ? "0 1 100%" : "0 1 auto")
+                .AddClass("ac-linkButton")
+                .AddClass("ac-showCardAction");
+
+            return buttonElement;
         }
 
         protected static HtmlTag SubmitActionRender(TypedElement actionElement, RenderContext context)
         {
             SubmitAction action = (SubmitAction)actionElement;
-            if (context.Config.SupportsInteractivity)
+
+            if (!context.Config.SupportsInteractivity)
             {
-                var uiButton = new LinkTag(action.Title, null, $"ac-{action.Type.Replace(".", "").ToLower()}", "ac-action");
-                return uiButton;
+                return null;
             }
-            return null;
+
+            var buttonElement = new HtmlTag("button") {Text = action.Title}
+                .Attr("type", "button")
+                .Style("overflow", "hidden")
+                .Style("white-space", "nowrap")
+                .Style("text-overflow", "ellipsis")
+                .Style("flex",
+                    context.Config.Actions.ActionAlignment == HorizontalAlignment.Stretch ? "0 1 100%" : "0 1 auto")
+                .AddClass("ac-pushButton")
+                .AddClass("ac-submitAction");
+
+            return buttonElement;
         }
 
         protected static HtmlTag HttpActionRender(TypedElement actionElement, RenderContext context)
         {
             HttpAction action = (HttpAction)actionElement;
-            if (context.Config.SupportsInteractivity)
+            if (!context.Config.SupportsInteractivity)
             {
-                var uiButton = new LinkTag(action.Title, null, $"ac-{action.Type.Replace(".", "").ToLower()}", "ac-action");
-                return uiButton;
+                return null;
             }
-            return null;
+
+            var buttonElement = new HtmlTag("button") { Text = action.Title }
+                .Attr("type", "button")
+                .Attr("url", action.Url)
+                .Attr("method", action.Method)
+                .Style("overflow", "hidden")
+                .Style("white-space", "nowrap")
+                .Style("text-overflow", "ellipsis")
+                .Style("flex",
+                    context.Config.Actions.ActionAlignment == HorizontalAlignment.Stretch ? "0 1 100%" : "0 1 auto")
+                .AddClass("ac-pushButton")
+                .AddClass("ac-httpAction");
+
+            if (string.IsNullOrEmpty(action.Body))
+            {
+                buttonElement.Attr("body", action.Body);
+            }
+
+            if (!string.IsNullOrEmpty(action.HeadersJson))
+            {
+                buttonElement.Attr("header", action.HeadersJson);
+            }
+
+            return buttonElement;
         }
 
         protected static HtmlTag AdaptiveCardRender(TypedElement element, RenderContext context)
@@ -667,6 +723,7 @@ namespace AdaptiveCards.Rendering
             DateInput input = (DateInput)element;
 
             var uiDateInput = new HtmlTag("input")
+                .Attr("name", input.Id)
                 .Attr("type", "date")
                 .AddClass("ac-input")
                 .AddClass("ac-dateInput")
@@ -695,6 +752,7 @@ namespace AdaptiveCards.Rendering
             NumberInput input = (NumberInput)element;
 
             var uiNumberInput = new HtmlTag("input")
+                .Attr("name", input.Id)
                 .AddClass("ac-input")
                 .AddClass("ac-numberInput")
                 .Attr("type", "number")
@@ -743,6 +801,7 @@ namespace AdaptiveCards.Rendering
             }
 
             uiTextInput
+                .Attr("name", input.Id)
                 .AddClass("ac-textinput")
                 .AddClass("ac-input")
                 .Style("width", "100%");
@@ -765,6 +824,7 @@ namespace AdaptiveCards.Rendering
             TimeInput input = (TimeInput)element;
             var uiTimeInput = new HtmlTag("input")
                 .Attr("type", "time")
+                .Attr("name", input.Id)
                 .AddClass("ac-input")
                 .AddClass("ac-timeInput")
                 .Style("width", "100%");
